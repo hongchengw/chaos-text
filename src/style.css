@@ -60,3 +60,38 @@ body {
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
+
+/* Full-viewport chaos background. Always behind the input and the main line,
+   and never clickable, so it can never obstruct typing or reading. */
+#fill {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#typer,
+#display,
+#instructions {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes drift {
+  0%   { transform: translate(0, 0) rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
+  50%  { transform: translate(10px, -10px) rotate(calc(var(--base-rot, 0deg) + 15deg)) scale(calc(var(--base-scale, 1) * 1.1)); }
+  100% { transform: translate(0, 0) rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
+}
+
+@keyframes spin {
+  0%   { transform: rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
+  100% { transform: rotate(calc(var(--base-rot, 0deg) + 360deg)) scale(var(--base-scale, 1)); }
+}
+
+#fill span {
+  position: absolute;
+  display: inline-block;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
