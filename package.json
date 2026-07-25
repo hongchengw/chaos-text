@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Chaos Text — every keystroke randomizes font/color/rotation/scale of every character on screen.",
   "scripts": {
-    "test": "node --test tasks/tests/"
+    "test": "node --test"
   },
   "devDependencies": {
     "jsdom": "^29.1.1"

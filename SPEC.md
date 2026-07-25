@@ -18,18 +18,28 @@ Pure static site, no build step, no runtime dependencies. All source files live 
 - `randomAnimationDelay()` / `randomAnimationDuration()` — random timing (0–2s delay, 1.2–3s duration) so each character's wobble animation is out of sync with the others.
 - `buildCharStyle()` — bundles the above into one `{ fontFamily, color, rotation, scale }` object per character.
 - `styleToInline(style)` — turns a `buildCharStyle()` result into a CSS text string (`element.style.cssText`), setting `--base-rot`/`--base-scale` custom properties that the `wobble` keyframes animate around, plus a fresh random animation delay/duration.
-- `renderDisplay(text, displayEl)` — clears `displayEl` and rebuilds it as one `<span>` per character of `text`, calling `buildCharStyle()`/`styleToInline()` fresh for *every* span on *every* call — this is what makes the whole line re-randomize on each keystroke, not just the newest character. Wired to `#typer`'s `input` event.
+- `MAX_CHARS` — hard cap (300) on how many characters `renderDisplay` will draw, kept in sync with the `maxlength` attribute on `#typer`. See the security-audit entry in `changelog/CHANGELOG.md` for why.
+- `renderDisplay(text, displayEl)` — clears `displayEl` and rebuilds it as one `<span>` per character of `text` (truncated to `MAX_CHARS`), calling `buildCharStyle()`/`styleToInline()` fresh for *every* span on *every* call — this is what makes the whole line re-randomize on each keystroke, not just the newest character. Wired to `#typer`'s `input` event.
 
 ## Testing
-`node --test` runs the full suite (25 tests) from `tasks/tests/*.test.js`, covering randomization ranges/format, rendering behavior (span count, backspace, spaces), wobble animation properties, and structural regression checks on the HTML/CSS/README. `jsdom` is the only devDependency, used to simulate a DOM in Node.
+`npm test` (`node --test`) runs the full suite (38 tests) from `tasks/tests/*.test.js`, covering randomization ranges/format, rendering behavior (span count, backspace, spaces), wobble animation properties, structural regression checks on the HTML/CSS/README, and the input-hardening checks added by the security audit (length cap, injection resistance, no external resource loading). `jsdom` is the only devDependency, used to simulate a DOM in Node.
 
 Note: `package.json` has `"type": "module"`, so a plain `require('../../src/script.js')` from a test would see an empty ES-module namespace instead of the CommonJS exports. Every test file works around this by using Node's `node:module` `Module` class to explicitly `_compile` `script.js` as CommonJS before requiring it — see any file under `tasks/tests/` for the pattern.
 
 ## How to run
 Open `src/index.html` directly in a browser, or serve it statically (`npx http-server`, then visit `/src/index.html`). No build step required.
 
+## Deployment
+`vercel.json` makes the repo deployable to Vercel with no configuration: `outputDirectory` is `src` (so the app is served at `/`, not `/src/index.html`), and both `buildCommand` and `installCommand` are empty because there is no build and `jsdom` is a test-only devDependency that must not ship. `.vercelignore` keeps `tasks/`, `changelog/`, and docs out of the upload.
+
+Deliberately **not** installed: `@vercel/analytics` and Speed Insights. Both inject a runtime script and make network calls, which would break the "no third-party loading, everything happens client-side" property that `tasks/tests/07-input-hardening.test.js` asserts.
+
 ## Project history
 Built via a task-per-file workflow: `tasks/01-scaffold-html.md` through `tasks/06-verification-pass.md` are the original implementation specs, each executed by a subagent, test-verified, and committed/pushed individually. See `changelog/CHANGELOG.md` for the detailed, dated history of what each task changed and how it was verified — this file intentionally doesn't duplicate that log.
 
 ## Current status
-Feature-complete: all six planned tasks are implemented, and the full automated suite passes (25/25). One known gap noted in `changelog/CHANGELOG.md`'s task-06 entry: an actual interactive browser walkthrough (typing in a live tab, watching the wobble, checking DevTools) was never performed by an agent in this project's history — only inferred from automated jsdom-based tests. Worth doing once by hand if you're picking this project back up.
+Feature-complete: all six planned tasks are implemented, the security audit from `HANDOFF-SECURITY.md` is closed out, and the full automated suite passes (38/38).
+
+Two known gaps, both requiring a human:
+- **No live browser walkthrough has ever been done** in this project's history — every behavioral claim comes from jsdom. Noted originally in the task-06 changelog entry and still true after the audit. Worth doing once by hand.
+- **The Vercel deploy has not been executed.** `vercel.json` is validated as JSON and the routing was verified by serving `src/` as a docroot, but `npx vercel build` requires login and was never run, so the deploy itself is unconfirmed.

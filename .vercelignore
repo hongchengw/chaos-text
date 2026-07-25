@@ -1,0 +1,6 @@
+# Only src/ is served (see vercel.json outputDirectory). Everything below is
+# development-only and has no business being uploaded to the deployment.
+node_modules
+tasks
+changelog
+*.md

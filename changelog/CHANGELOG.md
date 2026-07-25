@@ -37,3 +37,44 @@
   - [x] Automated equivalents confirmed via test suite: per-character span rendering, full re-randomization of every visible character on each keystroke, backspace shrinking span count, space character handled without collapsing, wobble animation applied with per-character randomized delay/duration, no shared/identical randomization across characters.
   - [ ] Visual/interactive confirmation (actually typing in a live browser tab, watching the wobble, checking DevTools console/network tabs) — **not performed by the agent this session**; recommend the user open `index.html` directly (or via `npx http-server`) and eyeball it once. No external resources are referenced anywhere in `index.html`/`style.css`/`script.js` (no `<link>`/`<script src>`/`fetch`/`@import` pointing off-page), so no network requests are expected beyond the initial load.
 - **Project status: feature-complete.** All six planned tasks (scaffold, chaos style engine, render/input wiring, wobble animation, polish/README, verification) are implemented, tested, and pushed to `oriin/main`.
+
+## 2026-07-24 — security audit (`HANDOFF-SECURITY.md`) + Vercel deploy
+
+### Audit results
+
+Two of the three concerns raised in the handoff did **not** reproduce; they were already safe. One was a real defect.
+
+**No injection — verified by fuzzing, not assumed.** `renderDisplay` was driven through jsdom with ten adversarial inputs: `<script>` tags, a CSS-breakout string (`a; background:url(javascript:alert(1)); x:"`), an attribute-breakout string (`";}</style><img src=x onerror=alert(1)>`), `expression()`, zero-width and RTL-override characters, NULL and control bytes, stacked combining marks, a ZWJ emoji sequence, and a lone surrogate. Zero leaks in all ten cases — nothing reached an attribute or a style value. `span.textContent` plus a `cssText` assembled only from `buildCharStyle()` output holds up. This is now locked in by regression tests rather than left to inspection.
+
+**Offline-safe — confirmed.** No external `<link>`, `<script src>`, `@import`, `fetch`, `XMLHttpRequest`, `sendBeacon`, or `WebSocket` anywhere in `src/`. `npm audit`: 0 vulnerabilities (`jsdom ^29.1.1`, devDependency only, never shipped).
+
+**Unbounded input — the one real finding.** `#typer` had no `maxlength` and `renderDisplay` had no cap. Measured in jsdom before the fix:
+
+| chars | render time |
+|-------|-------------|
+| 1,000 | 479 ms |
+| 10,000 | 8,870 ms |
+| 50,000 | did not finish in 100 s+ |
+
+A real browser parses faster than jsdom but is *worse* in the steady state: every character is an `inline-block` span with an infinite `wobble` animation, so N characters means N elements the compositor animates forever, not a one-time cost. Pasting a large string froze the tab, and every subsequent keystroke rebuilt the whole thing.
+
+### Changes
+
+- **`src/script.js`** — added `MAX_CHARS = 300` and truncated in `renderDisplay` via `[...text].slice(0, MAX_CHARS)`. The spread iterates by code point (matching the previous `for...of`), so truncation cannot split a surrogate pair. Exported `MAX_CHARS` so tests assert against the constant rather than a literal.
+- **`src/index.html`** — added `maxlength="300"` to `#typer` as the primary control; the `renderDisplay` cap is the backstop, since `maxlength` does not constrain a programmatic `.value` assignment or a direct `renderDisplay` call. Also added `aria-labelledby="instructions"` to resolve an unlabelled-input accessibility warning on the same line.
+- **`vercel.json`** (new) — `outputDirectory: "src"` serves the app at `/` instead of `/src/index.html`, with relative asset paths unchanged. `buildCommand` and `installCommand` are empty: there is no build, and `jsdom` is test-only and must not ship.
+- **`.vercelignore`** (new) — excludes `node_modules`, `tasks/`, `changelog/`, and `*.md`.
+- **`package.json`** — fixed the `test` script, which was `node --test tasks/tests/` and errored with `MODULE_NOT_FOUND` on Node 24. Now `node --test`, which discovers the suite correctly.
+- **`tasks/tests/07-input-hardening.test.js`** (new, 13 tests) — cap enforcement, sub-cap input unaffected, surrogate pairs not split, the seven adversarial payloads asserted non-injecting with each character preserved verbatim, `maxlength`/`MAX_CHARS` drift check, and a scan asserting no external resource references or network APIs in `src/`.
+
+### Deliberately not done
+
+- **No CSP and no security headers.** CSP mitigates injected content, and there is no injection vector: no backend, no URL parameters, no storage, no third-party scripts. The only content reaching the page is what the user types on their own machine, and hosting on Vercel delivers files without adding state to protect. The one non-trivial argument — insurance against a future `textContent` → `innerHTML` regression — is better served by the injection tests above, which fail loudly in `node --test` instead of silently in a browser console. `X-Frame-Options`/`nosniff` were rejected on the same grounds: no auth, no session, nothing to clickjack.
+- **No `@vercel/analytics` or Speed Insights.** Both inject a runtime script and make network calls, which would break the no-third-party-loading property the audit just confirmed and test 07 now enforces.
+
+### Verification
+
+- `npm test` — **38/38 passed** (25 pre-existing regression tests, 13 new), 0 failures.
+- Post-fix benchmark: 10,000 chars → 379 ms, 200,000 → 279 ms, 1,000,000 → 179 ms, all producing exactly 300 spans. The 50,000-char case that previously never finished now returns immediately.
+- `vercel.json` validated as parseable JSON; routing verified by serving `src/` as a docroot — `/`, `/style.css`, and `/script.js` all returned 200 with the served HTML carrying `maxlength="300"`.
+- **Not verified:** `npx vercel build` requires `vercel login` and could not run unattended, so the deploy itself is unconfirmed. The live-browser walkthrough still has not been performed by any agent in this project's history — the pre-existing gap from task 06 remains open.

@@ -56,10 +56,19 @@ function styleToInline(style) {
   return `font-family: ${style.fontFamily}; color: ${style.color}; --base-rot: ${style.rotation}deg; --base-scale: ${style.scale}; animation-name: wobble; animation-delay: ${randomAnimationDelay()}; animation-duration: ${randomAnimationDuration()}; display: inline-block; white-space: pre;`;
 }
 
+// Upper bound on how many characters we'll render. Every character becomes an
+// inline-block <span> with its own infinite wobble animation, so the cost is
+// not just the one-time render — the compositor keeps animating N elements
+// forever. Without a cap, pasting a large string freezes the tab.
+// Keep in sync with the `maxlength` attribute on #typer in index.html.
+const MAX_CHARS = 300;
+
 function renderDisplay(text, displayEl) {
   const doc = displayEl.ownerDocument || document;
   displayEl.textContent = '';
-  for (const char of text) {
+  // Spread iterates by code point (same as the previous for...of), so the
+  // slice can't cut a surrogate pair in half.
+  for (const char of [...text].slice(0, MAX_CHARS)) {
     const span = doc.createElement('span');
     span.textContent = char;
     span.style.cssText = styleToInline(buildCharStyle());
@@ -89,6 +98,7 @@ if (typeof module !== 'undefined' && module.exports) {
     randomAnimationDuration,
     buildCharStyle,
     FONT_POOL,
+    MAX_CHARS,
     styleToInline,
     renderDisplay,
   };
