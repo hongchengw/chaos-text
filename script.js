@@ -35,6 +35,14 @@ function randomScale() {
   return 0.7 + Math.random() * 1.1;
 }
 
+function randomAnimationDelay() {
+  return `${(Math.random() * 2).toFixed(2)}s`;
+}
+
+function randomAnimationDuration() {
+  return `${(1.2 + Math.random() * 1.8).toFixed(2)}s`;
+}
+
 function buildCharStyle() {
   return {
     fontFamily: randomFontFamily(),
@@ -45,7 +53,7 @@ function buildCharStyle() {
 }
 
 function styleToInline(style) {
-  return `font-family: ${style.fontFamily}; color: ${style.color}; transform: rotate(${style.rotation}deg) scale(${style.scale}); display: inline-block; white-space: pre;`;
+  return `font-family: ${style.fontFamily}; color: ${style.color}; --base-rot: ${style.rotation}deg; --base-scale: ${style.scale}; animation-name: wobble; animation-delay: ${randomAnimationDelay()}; animation-duration: ${randomAnimationDuration()}; display: inline-block; white-space: pre;`;
 }
 
 function renderDisplay(text, displayEl) {
@@ -77,6 +85,8 @@ if (typeof module !== 'undefined' && module.exports) {
     randomColor,
     randomRotation,
     randomScale,
+    randomAnimationDelay,
+    randomAnimationDuration,
     buildCharStyle,
     FONT_POOL,
     styleToInline,

@@ -45,8 +45,10 @@ test('styleToInline produces a CSS text string with the expected fields', () => 
   });
   assert.match(css, /font-family:\s*serif/);
   assert.match(css, /color:\s*hsl\(10, 80%, 60%\)/);
-  assert.match(css, /rotate\(12\.5deg\)/);
-  assert.match(css, /scale\(1\.2\)/);
+  // Task 04 replaced the direct `transform: rotate(...) scale(...)` with CSS
+  // custom properties consumed by the `wobble` keyframe animation.
+  assert.match(css, /--base-rot:\s*12\.5deg/);
+  assert.match(css, /--base-scale:\s*1\.2/);
 });
 
 test('renderDisplay creates one span per character with matching textContent', () => {

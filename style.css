@@ -31,3 +31,15 @@ body {
   text-align: center;
   max-width: 80vw;
 }
+
+@keyframes wobble {
+  0%   { transform: translateY(0) rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
+  50%  { transform: translateY(-4px) rotate(calc(var(--base-rot, 0deg) + 6deg)) scale(calc(var(--base-scale, 1) * 1.05)); }
+  100% { transform: translateY(0) rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
+}
+#display span {
+  display: inline-block;
+  animation-name: wobble;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}

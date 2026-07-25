@@ -15,3 +15,10 @@
 - Extended the `module.exports` block to also export `renderDisplay` and `styleToInline`.
 - Added `jsdom` as a devDependency and wrote `tasks/tests/03-render-and-input-wiring.test.js`, covering span-count-matches-text-length, style re-randomization across repeated renders, backspace shrinking the span count, and the space-character edge case.
 - Verified: `node --test` (full suite) — 15/15 passed, including the pre-existing 01 and 02 regression tests.
+
+## 2026-07-24 — tasks/04-wobble-animation.md
+- Added `@keyframes wobble` and `#display span` base animation rules to `style.css`, animating `transform` around each character's randomized base rotation/scale via the `--base-rot`/`--base-scale` CSS custom properties, so characters keep gently wobbling on their own between keystrokes.
+- Added `randomAnimationDelay()` (0-2s) and `randomAnimationDuration()` (1.2-3s) to `script.js` and exported them; updated `styleToInline(style)` to set `--base-rot`, `--base-scale`, `animation-name: wobble`, `animation-delay`, and `animation-duration` instead of the old direct `transform: rotate(...) scale(...)`.
+- Updated `tasks/tests/03-render-and-input-wiring.test.js`'s `styleToInline` assertions to check for the new `--base-rot`/`--base-scale` custom properties instead of the removed literal `rotate(...) scale(...)` transform, since Task 04 intentionally moved that responsibility to the CSS keyframes.
+- Added `tasks/tests/04-wobble-animation.test.js`, covering: every rendered span has `animationName === 'wobble'`; every span has non-empty `animationDelay`/`animationDuration`; delays differ across characters in one render (not a shared value); and `randomAnimationDelay()`/`randomAnimationDuration()` stay within their documented ranges across 150+ samples each.
+- Verified: `node --test` (full suite) — 20/20 passed, including the pre-existing 01-03 regression tests.
