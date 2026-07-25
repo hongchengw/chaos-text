@@ -1,0 +1,10 @@
+{
+  "name": "chaos-text",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Chaos Text — every keystroke randomizes font/color/rotation/scale of every character on screen.",
+  "scripts": {
+    "test": "node --test tasks/tests/"
+  }
+}
