@@ -22,3 +22,10 @@
 - Updated `tasks/tests/03-render-and-input-wiring.test.js`'s `styleToInline` assertions to check for the new `--base-rot`/`--base-scale` custom properties instead of the removed literal `rotate(...) scale(...)` transform, since Task 04 intentionally moved that responsibility to the CSS keyframes.
 - Added `tasks/tests/04-wobble-animation.test.js`, covering: every rendered span has `animationName === 'wobble'`; every span has non-empty `animationDelay`/`animationDuration`; delays differ across characters in one render (not a shared value); and `randomAnimationDelay()`/`randomAnimationDuration()` stay within their documented ranges across 150+ samples each.
 - Verified: `node --test` (full suite) — 20/20 passed, including the pre-existing 01-03 regression tests.
+
+## 2026-07-24 — tasks/05-page-polish-and-readme.md
+- Polished `style.css` (no logic changes): centered/constrained `#display` with `max-width`/padding and `word-break: break-word`/`overflow-wrap: break-word` so long input wraps instead of overflowing; restyled `#typer` as an underlined, transparent-background input matching the dark theme with a visible `:focus` outline; restyled `#instructions` as small, muted, centered text.
+- Tightened `index.html`'s instruction copy ("Start typing below — every keystroke falls apart.") without touching the `#typer`/`#display` structure.
+- Replaced the `README.md` placeholder with a description of the app, run instructions (open `index.html` directly, or `npx http-server`), and a test-running note (`npm install && node --test`).
+- Added `tasks/tests/05-page-polish-and-readme.test.js`, covering: `README.md` length (>200 chars) and mention of `index.html`; `index.html` still has `id="typer"`/`id="display"`; `style.css` still has `@keyframes wobble`.
+- Verified: `node --test` (full suite) — 25/25 passed, including all prior regression tests.
