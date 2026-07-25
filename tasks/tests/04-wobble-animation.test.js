@@ -64,11 +64,11 @@ test('randomAnimationDelay() falls within [0, 2] seconds across many samples', (
   }
 });
 
-test('randomAnimationDuration() falls within [1.2, 3] seconds across many samples', () => {
+test('randomAnimationDuration() falls within [0.4, 1.4] seconds across many samples', () => {
   for (let i = 0; i < 150; i++) {
     const val = randomAnimationDuration();
     assert.match(val, /^-?\d+(\.\d+)?s$/);
     const seconds = parseFloat(val);
-    assert.ok(seconds >= 1.2 && seconds <= 3, `expected ${seconds} to be in [1.2, 3]`);
+    assert.ok(seconds >= 0.4 && seconds <= 1.4, `expected ${seconds} to be in [0.4, 1.4]`);
   }
 });

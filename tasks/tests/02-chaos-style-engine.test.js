@@ -48,24 +48,24 @@ test('randomColor matches hsl format and ranges', () => {
     const sNum = parseFloat(match[2]);
     const lNum = parseFloat(match[3]);
     assert.ok(hNum >= 0 && hNum <= 360, `h out of range: ${hNum}`);
-    assert.ok(sNum >= 70 && sNum <= 100, `s out of range: ${sNum}`);
-    assert.ok(lNum >= 55 && lNum <= 80, `l out of range: ${lNum}`);
+    assert.ok(sNum >= 85 && sNum <= 100, `s out of range: ${sNum}`);
+    assert.ok(lNum >= 50 && lNum <= 80, `l out of range: ${lNum}`);
   }
 });
 
-test('randomRotation is a number within [-35, 35]', () => {
+test('randomRotation is a number within [-180, 180]', () => {
   for (let i = 0; i < ITERATIONS; i++) {
     const rotation = randomRotation();
     assert.equal(typeof rotation, 'number');
-    assert.ok(rotation >= -35 && rotation <= 35, `rotation out of range: ${rotation}`);
+    assert.ok(rotation >= -180 && rotation <= 180, `rotation out of range: ${rotation}`);
   }
 });
 
-test('randomScale is a number within [0.7, 1.8]', () => {
+test('randomScale is a number within [0.3, 3]', () => {
   for (let i = 0; i < ITERATIONS; i++) {
     const scale = randomScale();
     assert.equal(typeof scale, 'number');
-    assert.ok(scale >= 0.7 && scale <= 1.8, `scale out of range: ${scale}`);
+    assert.ok(scale >= 0.3 && scale <= 3, `scale out of range: ${scale}`);
   }
 });
 
@@ -75,9 +75,9 @@ test('buildCharStyle returns an object with all four fields populated and consis
     assert.ok(FONT_POOL.includes(style.fontFamily));
     assert.match(style.color, COLOR_RE);
     assert.equal(typeof style.rotation, 'number');
-    assert.ok(style.rotation >= -35 && style.rotation <= 35);
+    assert.ok(style.rotation >= -180 && style.rotation <= 180);
     assert.equal(typeof style.scale, 'number');
-    assert.ok(style.scale >= 0.7 && style.scale <= 1.8);
+    assert.ok(style.scale >= 0.3 && style.scale <= 3);
   }
 });
 

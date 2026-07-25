@@ -51,7 +51,7 @@ body {
 
 @keyframes wobble {
   0%   { transform: translateY(0) rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
-  50%  { transform: translateY(-4px) rotate(calc(var(--base-rot, 0deg) + 6deg)) scale(calc(var(--base-scale, 1) * 1.05)); }
+  50%  { transform: translateY(-14px) rotate(calc(var(--base-rot, 0deg) + 25deg)) scale(calc(var(--base-scale, 1) * 1.35)); }
   100% { transform: translateY(0) rotate(var(--base-rot, 0deg)) scale(var(--base-scale, 1)); }
 }
 #display span {

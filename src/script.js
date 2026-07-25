@@ -22,17 +22,17 @@ function randomFontFamily() {
 
 function randomColor() {
   const h = Math.random() * 360;
-  const s = 70 + Math.random() * 30;
-  const l = 55 + Math.random() * 25;
+  const s = 85 + Math.random() * 15;
+  const l = 50 + Math.random() * 30;
   return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
 function randomRotation() {
-  return -35 + Math.random() * 70;
+  return -180 + Math.random() * 360;
 }
 
 function randomScale() {
-  return 0.7 + Math.random() * 1.1;
+  return 0.3 + Math.random() * 2.7;
 }
 
 function randomAnimationDelay() {
@@ -40,7 +40,7 @@ function randomAnimationDelay() {
 }
 
 function randomAnimationDuration() {
-  return `${(1.2 + Math.random() * 1.8).toFixed(2)}s`;
+  return `${(0.4 + Math.random() * 1).toFixed(2)}s`;
 }
 
 function buildCharStyle() {
