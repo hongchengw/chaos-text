@@ -29,3 +29,11 @@
 - Replaced the `README.md` placeholder with a description of the app, run instructions (open `index.html` directly, or `npx http-server`), and a test-running note (`npm install && node --test`).
 - Added `tasks/tests/05-page-polish-and-readme.test.js`, covering: `README.md` length (>200 chars) and mention of `index.html`; `index.html` still has `id="typer"`/`id="display"`; `style.css` still has `@keyframes wobble`.
 - Verified: `node --test` (full suite) — 25/25 passed, including all prior regression tests.
+
+## 2026-07-24 — tasks/06-verification-pass.md
+- Ran the full automated suite from repo root: `node --test` — **25/25 passed**, 0 failures, 0 regressions across tasks 01-05.
+- Served the app statically (`npx http-server -p 8934 -c-1`) and confirmed `index.html`, `script.js` (95 lines), and `style.css` (contains `@keyframes wobble`) are all served correctly with no build step.
+- Manual browser smoke checklist (in-session browser automation was unavailable — Chrome extension not connected this session):
+  - [x] Automated equivalents confirmed via test suite: per-character span rendering, full re-randomization of every visible character on each keystroke, backspace shrinking span count, space character handled without collapsing, wobble animation applied with per-character randomized delay/duration, no shared/identical randomization across characters.
+  - [ ] Visual/interactive confirmation (actually typing in a live browser tab, watching the wobble, checking DevTools console/network tabs) — **not performed by the agent this session**; recommend the user open `index.html` directly (or via `npx http-server`) and eyeball it once. No external resources are referenced anywhere in `index.html`/`style.css`/`script.js` (no `<link>`/`<script src>`/`fetch`/`@import` pointing off-page), so no network requests are expected beyond the initial load.
+- **Project status: feature-complete.** All six planned tasks (scaffold, chaos style engine, render/input wiring, wobble animation, polish/README, verification) are implemented, tested, and pushed to `oriin/main`.
