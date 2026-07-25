@@ -8,8 +8,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..', '..');
 
 const readme = readFileSync(join(root, 'README.md'), 'utf-8');
-const html = readFileSync(join(root, 'index.html'), 'utf-8');
-const css = readFileSync(join(root, 'style.css'), 'utf-8');
+const html = readFileSync(join(root, 'src', 'index.html'), 'utf-8');
+const css = readFileSync(join(root, 'src', 'style.css'), 'utf-8');
 
 test('README.md is substantial (more than just a heading)', () => {
   assert.ok(readme.length > 200, `expected README.md length > 200, got ${readme.length}`);

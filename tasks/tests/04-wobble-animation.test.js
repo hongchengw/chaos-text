@@ -7,7 +7,7 @@ import Module from 'node:module';
 import { JSDOM } from 'jsdom';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const scriptPath = join(__dirname, '..', '..', 'script.js');
+const scriptPath = join(__dirname, '..', '..', 'src', 'script.js');
 
 // See tasks/tests/03-render-and-input-wiring.test.js for why script.js is
 // compiled explicitly as CommonJS here rather than require()'d/import'd

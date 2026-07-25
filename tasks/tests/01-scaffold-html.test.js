@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const html = readFileSync(join(__dirname, '..', '..', 'index.html'), 'utf-8');
+const html = readFileSync(join(__dirname, '..', '..', 'src', 'index.html'), 'utf-8');
 
 test('index.html contains #typer input', () => {
   assert.match(html, /id="typer"/);

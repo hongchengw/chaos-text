@@ -6,8 +6,8 @@ Chaos Text is a small joke webapp: type into the input box, and every character 
 
 No build step is required — it's plain HTML/CSS/JS.
 
-- Open `index.html` directly in a browser, or
-- Serve it statically, e.g. `npx http-server`.
+- Open `src/index.html` directly in a browser, or
+- Serve it statically, e.g. `npx http-server` (then visit `/src/index.html`).
 
 ## Running tests
 

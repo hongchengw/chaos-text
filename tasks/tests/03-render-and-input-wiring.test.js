@@ -7,7 +7,7 @@ import Module from 'node:module';
 import { JSDOM } from 'jsdom';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const scriptPath = join(__dirname, '..', '..', 'script.js');
+const scriptPath = join(__dirname, '..', '..', 'src', 'script.js');
 
 // The repo's package.json sets "type": "module", which would make Node's
 // require()/import treat script.js as an ES module (and its
