@@ -79,3 +79,17 @@ A real browser parses faster than jsdom but is *worse* in the steady state: ever
 - Post-fix benchmark: 10,000 chars → 379 ms, 200,000 → 279 ms, 1,000,000 → 179 ms, all producing exactly 300 spans. The 50,000-char case that previously never finished now returns immediately.
 - `vercel.json` validated as parseable JSON; routing verified by serving `src/` as a docroot — `/`, `/style.css`, and `/script.js` all returned 200 with the served HTML carrying `maxlength="300"`.
 - **Not verified:** `npx vercel build` requires `vercel login` and could not run unattended, so the deploy itself is unconfirmed. The live-browser walkthrough still has not been performed by any agent in this project's history — the pre-existing gap from task 06 remains open.
+
+## 2026-07-24 — extreme chaos pass (randomization ranges widened)
+
+Requested: make the display "more brazen and haywire, to the extremes." Widened the numeric ranges in the pure randomization functions and intensified the idle wobble animation; no structural, security, or rendering behavior changed.
+
+- **`src/script.js`**:
+  - `randomRotation()`: range widened from `[-35, 35]` to a full `[-180, 180]` degrees.
+  - `randomScale()`: range widened from `[0.7, 1.8]` to `[0.3, 3]`.
+  - `randomColor()`: saturation raised from `[70, 100]%` to `[85, 100]%`; lightness widened from `[55, 80]%` to `[50, 80]%`.
+  - `randomAnimationDuration()`: sped up from `[1.2, 3]s` to `[0.4, 1.4]s` so the idle wobble reads as frantic instead of lazy. `randomAnimationDelay()` left at `[0, 2]s` (stagger, not intensity).
+- **`src/style.css`**: `@keyframes wobble` amplitude increased at the 50% step — `translateY(-4px)` → `translateY(-14px)`, rotation offset `+6deg` → `+25deg`, scale multiplier `×1.05` → `×1.35`.
+- **Tests**: updated the hardcoded range assertions in `tasks/tests/02-chaos-style-engine.test.js` (rotation, scale, color saturation/lightness bounds) and `tasks/tests/04-wobble-animation.test.js` (`randomAnimationDuration` bounds) to match. No other test files needed changes — structural, rendering, and security-hardening tests (03, 05, 07) don't assert on these numeric ranges.
+- Verified: `npm test` — **38/38 passed**, 0 failures, 0 regressions.
+- Not performed: live-browser visual confirmation of the new intensity (same pre-existing gap noted in prior entries — no agent in this project's history has done a live browser walkthrough).
