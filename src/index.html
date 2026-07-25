@@ -10,6 +10,10 @@
   <!-- maxlength is kept in sync with MAX_CHARS in script.js -->
   <input id="typer" type="text" maxlength="300" aria-labelledby="instructions" autofocus autocomplete="off" spellcheck="false">
   <div id="display" aria-hidden="false"></div>
+  <!-- Decorative duplicate of the typed text tiled across the viewport.
+       Hidden from screen readers: the same text is already reachable via
+       #typer's value and announced through #display. -->
+  <div id="fill" aria-hidden="true"></div>
   <script src="script.js"></script>
 </body>
 </html>

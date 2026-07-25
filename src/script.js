@@ -43,6 +43,23 @@ function randomAnimationDuration() {
   return `${(0.4 + Math.random() * 1).toFixed(2)}s`;
 }
 
+// Animations a chaos character can be assigned. `wobble` is the original (and
+// the default for the main #display line); `drift` and `spin` widen the pool
+// for the background fill layer. Keep in sync with the @keyframes in style.css.
+const ANIMATION_POOL = ['wobble', 'drift', 'spin'];
+
+function randomAnimationName() {
+  return ANIMATION_POOL[Math.floor(Math.random() * ANIMATION_POOL.length)];
+}
+
+// Where a background fill character sits, as viewport percentages in [0, 100].
+function randomFillPosition() {
+  return {
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+  };
+}
+
 function buildCharStyle() {
   return {
     fontFamily: randomFontFamily(),
@@ -52,8 +69,16 @@ function buildCharStyle() {
   };
 }
 
-function styleToInline(style) {
-  return `font-family: ${style.fontFamily}; color: ${style.color}; --base-rot: ${style.rotation}deg; --base-scale: ${style.scale}; animation-name: wobble; animation-delay: ${randomAnimationDelay()}; animation-duration: ${randomAnimationDuration()}; display: inline-block; white-space: pre;`;
+// Shared inline-CSS assembly for both render paths.
+// `opts.animationName` defaults to 'wobble' (the main #display behaviour);
+// `opts.top`/`opts.left` are percentages, emitted only for the fill layer.
+function styleToInline(style, opts = {}) {
+  const animationName = opts.animationName || 'wobble';
+  const position =
+    typeof opts.top === 'number' && typeof opts.left === 'number'
+      ? ` top: ${opts.top}%; left: ${opts.left}%;`
+      : '';
+  return `font-family: ${style.fontFamily}; color: ${style.color}; --base-rot: ${style.rotation}deg; --base-scale: ${style.scale}; animation-name: ${animationName}; animation-delay: ${randomAnimationDelay()}; animation-duration: ${randomAnimationDuration()}; display: inline-block; white-space: pre;${position}`;
 }
 
 // Upper bound on how many characters we'll render. Every character becomes an
@@ -76,13 +101,45 @@ function renderDisplay(text, displayEl) {
   }
 }
 
+// Density cap for the decorative background layer. Deliberately lower than
+// MAX_CHARS: fill spans are absolutely positioned with infinite animations on
+// top of whatever #display is already animating, so this is the *additional*
+// ongoing compositor cost. 150 keeps the screen visibly full while staying
+// smooth on low-end/mobile hardware.
+const MAX_FILL_CHARS = 150;
+
+function renderFill(text, fillEl) {
+  const doc = fillEl.ownerDocument || document;
+  fillEl.textContent = '';
+
+  // Code-point iteration, same surrogate-pair safety as renderDisplay.
+  const chars = [...text];
+  if (chars.length === 0) return;
+
+  // Cycle through the typed characters until the cap is reached, so even a
+  // single-character input still tiles the whole viewport.
+  for (let i = 0; i < MAX_FILL_CHARS; i++) {
+    const span = doc.createElement('span');
+    span.textContent = chars[i % chars.length];
+    const { top, left } = randomFillPosition();
+    span.style.cssText = styleToInline(buildCharStyle(), {
+      animationName: randomAnimationName(),
+      top,
+      left,
+    });
+    fillEl.appendChild(span);
+  }
+}
+
 if (typeof document !== 'undefined' && document.getElementById) {
   document.addEventListener('DOMContentLoaded', () => {
     const typer = document.getElementById('typer');
     const display = document.getElementById('display');
-    if (typer && display) {
+    const fill = document.getElementById('fill');
+    if (typer && display && fill) {
       typer.addEventListener('input', () => {
         renderDisplay(typer.value, display);
+        renderFill(typer.value, fill);
       });
     }
   });
@@ -101,5 +158,10 @@ if (typeof module !== 'undefined' && module.exports) {
     MAX_CHARS,
     styleToInline,
     renderDisplay,
+    randomFillPosition,
+    randomAnimationName,
+    ANIMATION_POOL,
+    MAX_FILL_CHARS,
+    renderFill,
   };
 }
