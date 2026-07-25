@@ -65,6 +65,7 @@ A real browser parses faster than jsdom but is *worse* in the steady state: ever
 - **`vercel.json`** (new) — `outputDirectory: "src"` serves the app at `/` instead of `/src/index.html`, with relative asset paths unchanged. `buildCommand` and `installCommand` are empty: there is no build, and `jsdom` is test-only and must not ship.
 - **`.vercelignore`** (new) — excludes `node_modules`, `tasks/`, `changelog/`, and `*.md`.
 - **`package.json`** — fixed the `test` script, which was `node --test tasks/tests/` and errored with `MODULE_NOT_FOUND` on Node 24. Now `node --test`, which discovers the suite correctly.
+- **`HANDOFF-SECURITY.md`** — deleted. It briefed this audit; leaving it in place would send a future session to redo work that is already done and recorded here. This entry is the durable record.
 - **`tasks/tests/07-input-hardening.test.js`** (new, 13 tests) — cap enforcement, sub-cap input unaffected, surrogate pairs not split, the seven adversarial payloads asserted non-injecting with each character preserved verbatim, `maxlength`/`MAX_CHARS` drift check, and a scan asserting no external resource references or network APIs in `src/`.
 
 ### Deliberately not done

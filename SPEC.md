@@ -38,7 +38,7 @@ Deliberately **not** installed: `@vercel/analytics` and Speed Insights. Both inj
 Built via a task-per-file workflow: `tasks/01-scaffold-html.md` through `tasks/06-verification-pass.md` are the original implementation specs, each executed by a subagent, test-verified, and committed/pushed individually. See `changelog/CHANGELOG.md` for the detailed, dated history of what each task changed and how it was verified — this file intentionally doesn't duplicate that log.
 
 ## Current status
-Feature-complete: all six planned tasks are implemented, the security audit from `HANDOFF-SECURITY.md` is closed out, and the full automated suite passes (38/38).
+Feature-complete: all six planned tasks are implemented, the security audit is closed out (see the audit entry in `changelog/CHANGELOG.md` for findings and rationale), and the full automated suite passes (38/38).
 
 Two known gaps, both requiring a human:
 - **No live browser walkthrough has ever been done** in this project's history — every behavioral claim comes from jsdom. Noted originally in the task-06 changelog entry and still true after the audit. Worth doing once by hand.
