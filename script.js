@@ -44,6 +44,42 @@ function buildCharStyle() {
   };
 }
 
+function styleToInline(style) {
+  return `font-family: ${style.fontFamily}; color: ${style.color}; transform: rotate(${style.rotation}deg) scale(${style.scale}); display: inline-block; white-space: pre;`;
+}
+
+function renderDisplay(text, displayEl) {
+  const doc = displayEl.ownerDocument || document;
+  displayEl.textContent = '';
+  for (const char of text) {
+    const span = doc.createElement('span');
+    span.textContent = char;
+    span.style.cssText = styleToInline(buildCharStyle());
+    displayEl.appendChild(span);
+  }
+}
+
+if (typeof document !== 'undefined' && document.getElementById) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const typer = document.getElementById('typer');
+    const display = document.getElementById('display');
+    if (typer && display) {
+      typer.addEventListener('input', () => {
+        renderDisplay(typer.value, display);
+      });
+    }
+  });
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { randomFontFamily, randomColor, randomRotation, randomScale, buildCharStyle, FONT_POOL };
+  module.exports = {
+    randomFontFamily,
+    randomColor,
+    randomRotation,
+    randomScale,
+    buildCharStyle,
+    FONT_POOL,
+    styleToInline,
+    renderDisplay,
+  };
 }
